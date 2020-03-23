@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>大数据18C1-柏长泽</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css"/>
+
+    <script src="../static/jquery-3.4.1.min.js"></script>
+    <script src="../static/bootstrap.js"></script>
+    <script src="../static/echarts.min.js"></script>
+    <script src="../static/china.js"></script>
+
+    <style>
+        html,
+        body,
+        .body {
+            height: 100%;
+            width: 100%;
+        }
+
+        .body {
+            padding:30px;
+        }
+
+        .h100 {
+            height: 100%;
+        }
+
+        .h40 {
+            height: 40%;
+        }
+
+        .h55 {
+            height: 55%;
+        }
+
+    </style>
+</head>
+<body>
+<div class="body">
+    <div class="body">
+        <ul class="nav nav-tabs">
+            <li role="presentation" class="active" id="home"><a href="#">Home</a></li>
+            <li role="presentation" id="mapTag" data-toggle="modal" data-target="#myModal"><a href="#">疫情地图</a></li>
+            <li role="presentation" id="histTag" data-toggle="modal" data-target="#myModal"><a href="#">湖北历史疫情</a></li>
+            <li role="presentation" id="trendTag" data-toggle="modal" data-target="#myModal"><a href="#">湖北疫情趋势</a></li>
+        </ul>
+
+
+        <div class="container-fluid h100">
+            <div class="row h55">
+                <div class="col-md-12 h100">
+                    <div id="mapChart" style="height: 100%;width:100%;">地图</div>
+                </div>
+            </div>
+            <div class="row h40">
+                <div class="col-md-6 h100">
+                    <div id="hist" style="height: 100%;width:100%;">湖北历史疫情</div>
+                </div>
+                <div class="col-md-6 h100">
+                    <div id="trend" style="height: 100%;width:100%;">湖北疫情趋势</div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="modalChart" style="margin: auto;width: 500px;height: 400px;"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>
+
+
+<script type="text/javascript">
+     // 基于准备好的dom，初始化echarts实例
+        var prov2sales =  [
+    {
+      "name": "\u4e0a\u6d77",
+      "value": 337
+    },
+    {
+      "name": "\u4e91\u5357",
+      "value": 174
+    },
+    {
+      "name": "\u5185\u8499\u53e4",
+      "value": 75
+    },
+    {
+      "name": "\u5317\u4eac",
+      "value": 414
+    },
+    {
+      "name": "\u53f0\u6e7e",
+      "value": 41
+    },
+    {
+      "name": "\u5409\u6797",
+      "value": 93
+    },
+    {
+      "name": "\u56db\u5ddd",
+      "value": 538
+    },
+    {
+      "name": "\u5929\u6d25",
+      "value": 136
+    },
+    {
+      "name": "\u5b81\u590f",
+      "value": 74
+    },
+    {
+      "name": "\u5b89\u5fbd",
+      "value": 990
+    },
+    {
+      "name": "\u5c71\u4e1c",
+      "value": 758
+    },
+    {
+      "name": "\u5c71\u897f",
+      "value": 133
+    },
+    {
+      "name": "\u5e7f\u4e1c",
+      "value": 1350
+    },
+    {
+      "name": "\u5e7f\u897f",
+      "value": 252
+    },
+    {
+      "name": "\u65b0\u7586",
+      "value": 76
+    },
+    {
+      "name": "\u6c5f\u82cf",
+      "value": 631
+    },
+    {
+      "name": "\u6c5f\u897f",
+      "value": 935
+    },
+    {
+      "name": "\u6cb3\u5317",
+      "value": 318
+    },
+    {
+      "name": "\u6cb3\u5357",
+      "value": 1272
+    },
+    {
+      "name": "\u6d59\u6c5f",
+      "value": 1206
+    },
+    {
+      "name": "\u6d77\u5357",
+      "value": 168
+    },
+    {
+      "name": "\u6e56\u5317",
+      "value": 67103
+    },
+    {
+      "name": "\u6e56\u5357",
+      "value": 1018
+    },
+    {
+      "name": "\u6fb3\u95e8",
+      "value": 10
+    },
+    {
+      "name": "\u7518\u8083",
+      "value": 91
+    },
+    {
+      "name": "\u798f\u5efa",
+      "value": 296
+    },
+    {
+      "name": "\u897f\u85cf",
+      "value": 1
+    },
+    {
+      "name": "\u8d35\u5dde",
+      "value": 146
+    },
+    {
+      "name": "\u8fbd\u5b81",
+      "value": 122
+    },
+    {
+      "name": "\u91cd\u5e86",
+      "value": 576
+    },
+    {
+      "name": "\u9655\u897f",
+      "value": 245
+    },
+    {
+      "name": "\u9752\u6d77",
+      "value": 18
+    },
+    {
+      "name": "\u9999\u6e2f",
+      "value": 98
+    },
+    {
+      "name": "\u9ed1\u9f99\u6c5f",
+      "value": 480
+    }
+  ]
+        var mapChart = echarts.init(document.getElementById('mapChart'));        // 指定图表的配置项和数据
+		var mapChartOption = {
+
+        title: {
+            text: '中国COVID-19疫情地图',
+			subtext: '大数据18C1-柏长泽',
+			x:'center',
+			y:'top',
+			textAlign: 'center',
+            textStyle:{
+                    fontWeight:'bold',
+                    fontFamily:'SimHei',
+                    fontSize:16,
+                    color:'red',
+            }
+
+        },
+        tooltip:{
+                formatter:'疫情省份：{b} <br/>累计确诊：{c}人'
+            },
+         visualMap: {
+                min: 0,
+                max: 30000,
+                showLabel:true,
+                text:['高','低'],
+                pieces:[{
+                        gte:10000,
+                        label:'≥10000',
+                        color:'#CD0000'
+                    },{
+                        gte:1000,
+                        lt:10000,
+                        label:'1000-9999',
+                        color:'#FF0000'
+                    },{
+                        gte:100,
+                        lt:1000,
+                        label:'100-999',
+                        color:'#FF6347'
+                    },{
+                        lt:100,
+                        label:'≤100',
+                        color:'#FFA07A'
+                    },
+                ],
+            },
+        series: [{
+                name: '今日确诊',
+                type: 'map',
+                map:'china',
+                data:prov2sales,
+                label:{
+                    show:true,
+                    fontSize:8,
+                },
+                itemStyle:{
+                    borderWidth:1.0
+                },
+         }],
+    };
+
+    mapChart.setOption(mapChartOption);
+    window.addEventListener("resize", function() {
+            mapChart.resize();
+        });
+
+
+
+        var prov_name = "湖北";
+	var days = ["02.28", "02.29", "03.01", "03.02", "03.03", "03.04", "03.05", "03.06", "03.07", "03.08"];
+	var add_confirm = [423, 570, 196, 114, 115, 134, 126, 74, 41, 36];
+	var acc_confirm = [66337, 66907, 67103, 67217, 67332, 67466, 67592, 67666, 67707, 67743];
+	var histLine = echarts.init(document.getElementById('hist'));        // 指定图表的配置项和数据
+	var histLineOption = {
+			title: {
+					text: prov_name + '历史疫情',
+					x: 'left',
+					y: 'left',
+					textStyle:{color:'red', fontweight:'bold'},
+					subtextStyle:{color:'black'}},
+			tooltip: {},
+			legend: {
+				top:5,
+				left:'center',
+				show:true,
+				data:['累计确诊','新增确诊']
+			},
+			xAxis: {
+			       data: days,
+			       axisLabel: {
+			            textStyle:{color: 'black'},
+			            rotate:40}
+			       },
+			yAxis: [
+				{
+					type: 'value',
+					name:"累\n计\n确\n诊",
+					nameLocation:"center",
+					nameGap:70,
+					nameRotate:0,
+					nameTextStyle:{
+						fontSize: 16,
+					},
+				},
+				{
+					type: 'value',
+					name:"今\n日\n新\n增",
+					nameLocation:"center",
+					nameGap:50,
+					nameRotate:0,
+					nameTextStyle:{
+						fontSize: 16,
+					}
+				}],
+			series: [
+				{
+					name: '累计确诊',
+					type: 'line',
+					data: acc_confirm,
+					yAxisIndex:0,
+				},
+				{
+					name: '新增确诊',
+					type: 'line',
+					data: add_confirm,
+					yAxisIndex:1,
+					smooth:true,
+					itemStyle:
+					{
+						normal:{
+					    // 拐点上显示数值
+							label : {
+								show: true
+							},
+						}
+					}
+				}]
+	 };
+	histLine.setOption(histLineOption);
+
+
+
+	var prov_name = "湖北";
+	var days = ["03/03", "03/04", "03/05", "03/06", "03/07", "03/08", "03/09", "03/10", "03/11", "03/12"];
+	var add_confirm = [115, 134, 126, 74, 41, 36, 36, 27, 21, 14];
+	var acc_confirm = [67332, 67466, 67592, 67666, 67707, 67743, 67743, 67770, 67791, 67805];
+	var trendLine = echarts.init(document.getElementById('trend'));        // 指定图表的配置项和数据
+	var trendLineOption = {
+			title: {
+					text: prov_name + '疫情趋势',
+					textStyle:{color:'red', fontweight:'bold'},
+					subtextStyle:{color:'black'}},
+			tooltip: {},
+			legend: {
+				top:10,
+				left:'center',
+				show:true,
+				data:['累计确诊','新增确诊']
+			},
+			xAxis: { data: days, axisLabel: {textStyle:{color: 'black'}, rotate:40}},
+			yAxis: [
+				{
+					type: 'value',
+					name:"确\n诊\n人\n数",
+					nameLocation:"center",
+					nameGap:50,
+					nameRotate:0,
+					nameTextStyle:{
+						fontSize: 16,
+					},
+				},
+				{
+					type: 'value',
+					name:"今\n日\n新\n增\n人\n数",
+					nameLocation:"center",
+					nameGap:50,
+					nameRotate:0,
+					nameTextStyle:{
+						fontSize: 16,
+					}
+				}],
+			series: [
+				{
+					name: '累计确诊',
+					type: 'line',
+					data: acc_confirm,
+					yAxisIndex:0,
+				},
+				{
+					name: '新增确诊',
+					type: 'line',
+					data: add_confirm,
+					yAxisIndex:1,
+					smooth:true,
+					itemStyle:
+					{
+						normal:{
+					    // 拐点上显示数值
+							label : {
+								show: true
+							},
+						}
+					}
+				}]
+	 };
+	trendLine.setOption(trendLineOption);
+
+$('.nav li').click(function () {
+var id = $(this)[0].id;
+$(this).addClass('active');
+$(this).siblings().removeClass('active');
+var modalChart = echarts.init(document.getElementById('modalChart'));
+if (id == "mapTag") {
+modalChart.clear();
+modalChart.setOption(mapChartOption);
+} else if (id == "histTag") {
+modalChart.clear();
+modalChart.setOption(histLineOption);
+} else if (id == "trendTag") {
+modalChart.clear();
+modalChart.setOption(trendLineOption);
+}
+});
+
+
+</script>
+
+
+

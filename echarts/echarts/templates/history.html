@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>疫情历史</title>
+	<style>
+        .centerItem {
+            width: 856px;
+            height: 640px;
+            margin: 110px auto 0 auto;
+        }
+    </style>
+    <script src="../static/jquery-3.4.1.min.js"></script>
+    <script src="../static/echarts.min.js"></script>	
+</head>
+<body>
+<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+<div id="hist" class="centerItem"></div>
+</body>
+</html>
+
+<script>
+	var prov_name = "湖北";
+	var days = ["02.28", "02.29", "03.01", "03.02", "03.03", "03.04", "03.05", "03.06", "03.07", "03.08"];
+	var add_confirm = [423, 570, 196, 114, 115, 134, 126, 74, 41, 36];
+	var acc_confirm = [66337, 66907, 67103, 67217, 67332, 67466, 67592, 67666, 67707, 67743];
+	var histLine = echarts.init(document.getElementById('hist'));        // 指定图表的配置项和数据
+	var histLineOption = {
+			title: {
+					text: prov_name + '历史疫情',
+					x: 'left',
+					y: 'left',
+					textStyle:{color:'red', fontweight:'bold'},
+					subtextStyle:{color:'black'}},
+			tooltip: {},
+			legend: {
+				top:5,
+				left:'center',
+				show:true,
+				data:['累计确诊','新增确诊']
+			},
+			xAxis: {
+			       data: days,
+			       axisLabel: {
+			            textStyle:{color: 'black'},
+			            rotate:40}
+			       },
+			yAxis: [
+				{
+					type: 'value',
+					name:"累\n计\n确\n诊",
+					nameLocation:"center",
+					nameGap:70,
+					nameRotate:0,
+					nameTextStyle:{
+						fontSize: 16,
+					},
+				},
+				{
+					type: 'value',
+					name:"今\n日\n新\n增",
+					nameLocation:"center",
+					nameGap:50,
+					nameRotate:0,
+					nameTextStyle:{
+						fontSize: 16,
+					}
+				}],
+			series: [
+				{
+					name: '累计确诊',
+					type: 'line',
+					data: acc_confirm,
+					yAxisIndex:0,
+				},
+				{
+					name: '新增确诊',
+					type: 'line',
+					data: add_confirm,
+					yAxisIndex:1,
+					smooth:true,
+					itemStyle:
+					{
+						normal:{
+					    // 拐点上显示数值
+							label : {
+								show: true
+							},
+						}
+					}
+				}]
+	 };
+	histLine.setOption(histLineOption);
+</script>
